@@ -67,7 +67,7 @@ public interface TryWith {
         }
     }
 
-    static <E extends Exception> void catchRunException(RunWithException runnable, Consumer<Exception> logger) {
+    static <E extends Exception> void catchRunException(RunWithException<E> runnable, Consumer<Exception> logger) {
         try {
             runnable.run();
         } catch (Exception ex) {
