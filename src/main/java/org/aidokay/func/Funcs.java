@@ -23,8 +23,8 @@ public class Funcs {
     }
 
     //Flip
-    public static <A, B, C> Function<A, Function<B, C>> curry(BiFunction<A, B, C> biFunc) {
-        return a -> b -> biFunc.apply(a, b);
+    public static <A, B, C> Function<B, Function<A, C>> curry(BiFunction<A, B, C> biFunc) {
+        return b -> a -> biFunc.apply(a, b);
     }
 
     //chain
