@@ -1,5 +1,6 @@
 package org.aidokay.func;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -58,5 +59,29 @@ public class Funcs {
         return func;
     }
 
+    /**
+     *  This method is used for cases like, pick values from one object's getter and set to another object using its setters
+     *
+     * @param getter - Object A's getter method used to get the value
+     * @param setter - Object B's setter method used to set the getter returned value to object of B
+     * @return - A new BiConsumer which accept Object A and Object B
+     * @param <A> - Source Object type used to pick up values from
+     * @param <B> - Target Object type used to set values to
+     * @param <C> - intermediate type of the value returned by getter
+     */
+    public static <A, B, C> BiConsumer<A, B> bridge(Function<A, C> getter, BiConsumer<B, C> setter) {
+        return bridge(getter, Function.identity(), setter);
+    }
 
+    public static <A, B, C, D> BiConsumer<A, B> bridge(Function<A, C> getter, Function<C, D> transformer, BiConsumer<B, D> setter) {
+        return (a, b) -> setter.accept(b, getter.andThen(transformer).apply(a));
+    }
+
+    public static <A, B, C, D> BiFunction<A, B, D> bridgeWithReturning(Function<A, C> getter, Function<C, D> transformer, BiConsumer<B, D> setter) {
+        return (a, b) -> {
+            var value = getter.andThen(transformer).apply(a);
+            setter.accept(b, value);
+            return value;
+        };
+    }
 }
