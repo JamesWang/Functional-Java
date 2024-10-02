@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static org.aidokay.func.Funcs.asFunc;
 
@@ -59,4 +60,35 @@ public class FuncBridgeTest {
         Assertions.assertEquals(123, result);
     }
 
+    private final Function<Object, Boolean> objToBool =
+            ExtFunc.asFunc(String::valueOf).andThen(Boolean::valueOf);
+    @Test
+    public void testExtFunc_toBoolean_true(){
+        var transmitter = ExtFunc
+                .asFunc((A<Object> x) -> x.getValue())
+                .transform(objToBool)
+                //.transform(String::valueOf).transform(Boolean::valueOf)
+                .pipe(B::setValueValid);
+
+        A<Object> a = new A<>("true");
+        B b = new B();
+
+        transmitter.accept(a, b);
+        Assertions.assertTrue(b.isValueValid());
+    }
+
+    @Test
+    public void testExtFunc_pipeWithReturns_toBoolean_true(){
+        var transmitter = ExtFunc
+                .asFunc((A<Object> x) -> x.getValue())
+                .transform(objToBool)
+                .pipeThenGetValue(B::setValueValid);
+
+        A<Object> a = new A<>("true");
+        B b = new B();
+
+        var value = transmitter.apply(a, b);
+        Assertions.assertTrue(value);
+        Assertions.assertTrue(b.isValueValid());
+    }
 }
