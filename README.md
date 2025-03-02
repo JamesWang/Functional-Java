@@ -20,4 +20,11 @@
   * Kite: λx.y y
   * Flip: λx.λy.(y, x)
   * Y-combinator: λg.(λx.g(x x) (λx.g(x x))
-  *
+
+### Pipe Getter to Setter
+```java
+    var transmitter = ExtFunc
+        .asFunc((A<Object> x) -> x.getValue())
+        .transform(objToBool)
+        .pipeThenGetValue(B::setValueValid);
+```
