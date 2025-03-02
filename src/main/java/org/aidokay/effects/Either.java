@@ -16,42 +16,44 @@ public record Either<L, R>(L left, R right) {
     }
 
     public <U> Either<L, U> map(Function<? super R, ? extends U> func) {
-        Objects.requireNonNull(func);
+        Objects.requireNonNull(func, "func cannot be null in map()");
         return isRight() ? Either.right(func.apply(right)) : Either.left(left);
     }
 
     public <U> Either<L, U> flatMap(Function<? super R, Either<L, U>> func) {
-        Objects.requireNonNull(func);
+        Objects.requireNonNull(func, "func cannot be null in flatMap()");
         return isRight() ? func.apply(right) : Either.left(left);
     }
 
     public R getOrElse(Supplier<R> supplier) {
-        Objects.requireNonNull(supplier);
+        Objects.requireNonNull(supplier, "supplier must be provided in getOrElse()");
         return isRight() ? this.right : supplier.get();
     }
 
     public R getOrElseGet(Function<? super L, ? extends R> func) {
-        Objects.requireNonNull(func);
+        Objects.requireNonNull(func, "func cannot be null in getOrElseGet()");
         return isRight() ? this.right : func.apply(left);
     }
 
     public <E extends Throwable> R getOrElseThrow(Function<? super L, E> execFunc) throws E {
-        Objects.requireNonNull(execFunc);
+        Objects.requireNonNull(execFunc, "execFunc must be provided in getOrElseThrow()");
         if (isRight()) {
             return this.right();
         }
         throw execFunc.apply(this.left);
     }
 
-    public Either<L, R> peek(Consumer<? super R> action) {
-        Objects.requireNonNull(action);
+    public Either<L, R> peek(Consumer<? super R> consumer) {
+        Objects.requireNonNull(consumer, "consumer argument must be provided in peek()");
         if (isRight()) {
-            action.accept(right);
+            consumer.accept(right);
         }
         return this;
     }
 
     public static <E, T> Either<E, T> fromOptional(Supplier<Optional<T>> result, Supplier<E> errorSupplier) {
+        Objects.requireNonNull(result, "result argument must be provided");
+        Objects.requireNonNull(errorSupplier, "errorSupplier should be provided");
         return result.get().<Either<E, T>>map(Either::right).orElseGet(() -> Either.left(errorSupplier.get()));
     }
 
