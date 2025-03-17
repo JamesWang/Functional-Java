@@ -1,9 +1,6 @@
 package org.aidokay.func;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
 
 public class Funcs {
     private Funcs() {
@@ -43,6 +40,14 @@ public class Funcs {
         return value;
     }
 
+    public static <T, R> Function<T, R> yCombinator(UnaryOperator<Function<T, R>> f) {
+        return t -> {
+            final Function<T, R>[] result = new Function[1];
+            result[0] = f.apply(x -> result[0].apply(x));
+            return result[0].apply(t);
+        };
+    }
+
     //Y combinator
     //Y = λg.(λx.g(x x) (λx.g(x x))
     //Y = g -> (x -> g(x(x))(x -> g(x(x))
@@ -60,14 +65,14 @@ public class Funcs {
     }
 
     /**
-     *  This method is used for cases like, pick values from one object's getter and set to another object using its setters
+     * This method is used for cases like, pick values from one object's getter and set to another object using its setters
      *
      * @param getter - Object A's getter method used to get the value
      * @param setter - Object B's setter method used to set the getter returned value to object of B
+     * @param <A>    - Source Object type used to pick up values from
+     * @param <B>    - Target Object type used to set values to
+     * @param <C>    - intermediate type of the value returned by getter
      * @return - A new BiConsumer which accept Object A and Object B
-     * @param <A> - Source Object type used to pick up values from
-     * @param <B> - Target Object type used to set values to
-     * @param <C> - intermediate type of the value returned by getter
      */
     public static <A, B, C> BiConsumer<A, B> bridge(Function<A, C> getter, BiConsumer<B, C> setter) {
         return bridge(getter, Function.identity(), setter);
