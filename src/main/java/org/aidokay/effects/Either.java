@@ -51,6 +51,12 @@ public record Either<L, R>(L left, R right) {
         return this;
     }
 
+    public <T> T fold(Function<? super L, ? extends T> leftFunc, Function<? super R, ? extends T> rightFunc) {
+        Objects.requireNonNull(leftFunc, "leftFunc must be provided in fold()");
+        Objects.requireNonNull(rightFunc, "rightFunc must be provided in fold()");
+        return isRight() ? rightFunc.apply(right) : leftFunc.apply(left);
+    }
+
     public static <E, T> Either<E, T> fromOptional(Supplier<Optional<T>> result, Supplier<E> errorSupplier) {
         Objects.requireNonNull(result, "result argument must be provided");
         Objects.requireNonNull(errorSupplier, "errorSupplier should be provided");
